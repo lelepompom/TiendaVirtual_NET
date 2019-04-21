@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DataLayer
+namespace DataLayer.EF
 {
     using System;
     using System.Collections.Generic;
@@ -22,6 +22,7 @@ namespace DataLayer
     
         public int Id { get; set; }
         public string Name { get; set; }
+        public int Price { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Orders { get; set; }

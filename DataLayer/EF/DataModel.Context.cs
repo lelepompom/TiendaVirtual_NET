@@ -7,16 +7,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DataLayer
+namespace DataLayer.EF
 {
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class TiendaVirtualDBEntities : DbContext
+    public partial class TiendaDBEntities : DbContext
     {
-        public TiendaVirtualDBEntities()
-            : base("name=TiendaVirtualDBEntities")
+        public TiendaDBEntities()
+            : base("name=TiendaDBEntities")
         {
         }
     

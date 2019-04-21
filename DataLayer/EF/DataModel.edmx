@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="TiendaVirtualDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="TiendaVirtualDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Clients">
           <Key>
             <PropertyRef Name="Id" />
@@ -21,11 +21,11 @@
         </EntityType>
         <EntityType Name="ProductOrder">
           <Key>
-            <PropertyRef Name="Products_Id" />
             <PropertyRef Name="Orders_Id" />
+            <PropertyRef Name="Products_Id" />
           </Key>
-          <Property Name="Products_Id" Type="int" Nullable="false" />
           <Property Name="Orders_Id" Type="int" Nullable="false" />
+          <Property Name="Products_Id" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Products">
           <Key>
@@ -33,6 +33,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Price" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="FK_ClientOrder">
           <End Role="Clients" Type="Self.Clients" Multiplicity="1" />
@@ -88,30 +89,18 @@
             <End Role="ProductOrder" EntitySet="ProductOrder" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="TiendaVirtualDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityContainer Name="TiendaVirtualDBEntities" annotation:LazyLoadingEnabled="true" >
-          <EntitySet Name="Clients" EntityType="TiendaVirtualDBModel.Client" />
-          <EntitySet Name="Orders" EntityType="TiendaVirtualDBModel.Order" />
-          <EntitySet Name="Products" EntityType="TiendaVirtualDBModel.Product" />
-          <AssociationSet Name="FK_ClientOrder" Association="TiendaVirtualDBModel.FK_ClientOrder">
-            <End Role="Client" EntitySet="Clients" />
-            <End Role="Order" EntitySet="Orders" />
-          </AssociationSet>
-          <AssociationSet Name="ProductOrder" Association="TiendaVirtualDBModel.ProductOrder">
-            <End Role="Order" EntitySet="Orders" />
-            <End Role="Product" EntitySet="Products" />
-          </AssociationSet>
-        </EntityContainer>
         <EntityType Name="Client">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Orders" Relationship="TiendaVirtualDBModel.FK_ClientOrder" FromRole="Client" ToRole="Order" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Orders" Relationship="Self.FK_ClientOrder" FromRole="Clients" ToRole="Orders" />
         </EntityType>
         <EntityType Name="Order">
           <Key>
@@ -119,69 +108,84 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ClientId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Client" Relationship="TiendaVirtualDBModel.FK_ClientOrder" FromRole="Order" ToRole="Client" />
-          <NavigationProperty Name="Products" Relationship="TiendaVirtualDBModel.ProductOrder" FromRole="Order" ToRole="Product" />
+          <NavigationProperty Name="Client" Relationship="Self.FK_ClientOrder" FromRole="Orders" ToRole="Clients" />
+          <NavigationProperty Name="Products" Relationship="Self.ProductOrder" FromRole="Orders" ToRole="Products" />
         </EntityType>
         <EntityType Name="Product">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Orders" Relationship="TiendaVirtualDBModel.ProductOrder" FromRole="Product" ToRole="Order" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Price" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Orders" Relationship="Self.ProductOrder" FromRole="Products" ToRole="Orders" />
         </EntityType>
         <Association Name="FK_ClientOrder">
-          <End Type="TiendaVirtualDBModel.Client" Role="Client" Multiplicity="1" />
-          <End Type="TiendaVirtualDBModel.Order" Role="Order" Multiplicity="*" />
+          <End Role="Clients" Type="Self.Client" Multiplicity="1" />
+          <End Role="Orders" Type="Self.Order" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Client">
+            <Principal Role="Clients">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Order">
+            <Dependent Role="Orders">
               <PropertyRef Name="ClientId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="ProductOrder">
-          <End Type="TiendaVirtualDBModel.Order" Role="Order" Multiplicity="*" />
-          <End Type="TiendaVirtualDBModel.Product" Role="Product" Multiplicity="*" />
+          <End Role="Orders" Type="Self.Order" Multiplicity="*" />
+          <End Role="Products" Type="Self.Product" Multiplicity="*" />
         </Association>
+        <EntityContainer Name="TiendaDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Clients" EntityType="Self.Client" />
+          <EntitySet Name="Orders" EntityType="Self.Order" />
+          <EntitySet Name="Products" EntityType="Self.Product" />
+          <AssociationSet Name="FK_ClientOrder" Association="Self.FK_ClientOrder">
+            <End Role="Clients" EntitySet="Clients" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="ProductOrder" Association="Self.ProductOrder">
+            <End Role="Orders" EntitySet="Orders" />
+            <End Role="Products" EntitySet="Products" />
+          </AssociationSet>
+        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="TiendaVirtualDBModelStoreContainer" CdmEntityContainer="TiendaVirtualDBEntities" >
+        <EntityContainerMapping StorageEntityContainer="TiendaVirtualDBModelStoreContainer" CdmEntityContainer="TiendaDBEntities">
           <EntitySetMapping Name="Clients">
             <EntityTypeMapping TypeName="TiendaVirtualDBModel.Client">
               <MappingFragment StoreEntitySet="Clients">
-                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="TiendaVirtualDBModel.Order">
               <MappingFragment StoreEntitySet="Orders">
-                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Products">
             <EntityTypeMapping TypeName="TiendaVirtualDBModel.Product">
               <MappingFragment StoreEntitySet="Products">
-                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <AssociationSetMapping Name="ProductOrder" TypeName="TiendaVirtualDBModel.ProductOrder" StoreEntitySet="ProductOrder">
-            <EndProperty Name="Product">
-              <ScalarProperty Name="Id" ColumnName="Products_Id" />
-            </EndProperty>
-            <EndProperty Name="Order">
+            <EndProperty Name="Orders">
               <ScalarProperty Name="Id" ColumnName="Orders_Id" />
+            </EndProperty>
+            <EndProperty Name="Products">
+              <ScalarProperty Name="Id" ColumnName="Products_Id" />
             </EndProperty>
           </AssociationSetMapping>
         </EntityContainerMapping>
